@@ -1,0 +1,152 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.context-view .tooltip.customhover {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.app-workbench-container {
+  position: absolute;
+}
+
+.app-workbench {
+  font-size: 13px;
+  line-height: 1.4em;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.app-workbench input {
+  font-size: 100%;
+}
+
+.app-workbench > .part {
+  position: absolute;
+  box-sizing: border-box;
+}
+
+.app-workbench .app-action-bar .select-box {
+  margin-top: 8px; /* Center the select box */
+}
+
+.app-workbench.windows .app-action-bar .select-box {
+  margin-top: 7px; /* Center the select box */
+}
+
+#app-workbench-drop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 10000;
+}
+
+/* ---------- Light Theme ---------- */
+
+.vs .app-workbench {
+  background-color: #f3f3f3;
+}
+
+.vs .app-workbench .sidebar .separator {
+  background-color: #efeff2;
+}
+
+.vs .app-workbench input {
+  background-color: white;
+}
+
+.vs .app-workbench input:disabled {
+  background-color: #e1e1e1;
+}
+
+.vs #app-workbench-drop-overlay {
+  background-color: rgba(51, 153, 255, 0.18);
+}
+
+/* ---------- Dark Theme ---------- */
+
+.vs-dark .app-workbench {
+  --input-bgcolor: #3c3c3c;
+  background-color: #252526;
+  color: #ccc;
+}
+
+.vs-dark .app-workbench .app-scrollable-element .shadow.top {
+  box-shadow: #000 0 6px 6px -6px inset;
+}
+.vs-dark .app-workbench .app-scrollable-element .shadow.left {
+  box-shadow: #000 6px 0 6px -6px inset;
+}
+.vs-dark .app-workbench .app-scrollable-element .shadow.top.left {
+  box-shadow: #000 6px 6px 6px -6px inset;
+}
+.vs-dark .app-workbench .app-scrollable-element .slider.active {
+  background-color: rgba(85, 85, 85, 0.8);
+}
+
+.vs-dark .app-workbench .sidebar {
+  border: none;
+}
+.vs-dark .app-workbench .sidebar .separator {
+  background-color: #2d2d30;
+}
+
+.vs-dark .app-workbench input,
+.vs-dark .app-workbench textarea {
+  background-color: var(--input-bgcolor);
+}
+
+.vs-dark .app-workbench input:disabled {
+  background-color: #333;
+}
+
+.vs-dark .app-workbench .viewlet .message {
+  opacity: 0.5;
+}
+
+.vs-dark .app-workbench .stacked-view .action-label {
+  color: inherit;
+}
+.vs-dark .app-workbench .stacked-view .action-label:hover {
+  color: #3399ff;
+}
+
+.vs-dark #app-workbench-drop-overlay {
+  background-color: rgba(83, 89, 93, 0.5);
+}
+
+/* ---------- HC Theme ---------- */
+
+.hc-black .app-workbench {
+  color: #fff;
+  background-color: #000;
+}
+
+.hc-black .app-workbench .sidebar .separator {
+  background-color: #000;
+  border: 1px solid #6fc3df;
+}
+
+.hc-black .app-workbench input,
+.hc-black .app-workbench textarea {
+  background-color: #000;
+}
+
+.hc-black
+  .app-workbench
+  .app-action-bar
+  .action-item.disabled
+  .action-label.disabled {
+  opacity: 0.4;
+}
+
+.hc-black #app-workbench-drop-overlay {
+  background: none !important;
+  outline: 2px dashed #f38518;
+  outline-offset: -2px;
+}

@@ -1,0 +1,9 @@
+.builder-hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+.builder-visible {
+  display: inherit;
+  visibility: visible;
+}

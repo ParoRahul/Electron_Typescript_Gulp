@@ -1,0 +1,8 @@
+node_modules
+dist
+build/node_modules
+build/*.js
+build/*.css
+build/*.html
+temp
+bkp

@@ -1,0 +1,21 @@
+{
+	"nameShort": "My APP",
+	"nameLong": "My APP",
+	"applicationName": "my-App",
+	"dataFolderName": ".myApp",
+	"win32MutexName": "myAppMutex",
+	"licenseName": "MIT",
+	"licenseUrl": "https://github.com/ParoRahul/Electron-Typescript-App.git",
+	"win32AppId": "{{E34003BB-9E10-4501-8C11-BE3FAA83F23F}",
+	"win32AppUserModelId": "Rahul.myApp",
+	"darwinBundleIdentifier": "com.myApp.oss",
+	"reportIssueUrl": "https://github.com/ParoRahul/Electron-Typescript-App.git",
+	"urlProtocol": "myApp-pro",
+	"downloadUrl": "",
+	"updateUrl": "",
+	"date": "",
+	"documentationUrl":"",
+	"releaseNotesUrl": "",
+	"introductoryVideosUrl": "",
+	"twitterUrl": ""
+}

@@ -1,0 +1,21 @@
+.app-sash {
+  position: absolute;
+  z-index: 100;
+  touch-action: none;
+}
+
+.app-sash.vertical {
+  cursor: ew-resize;
+  height: 100%;
+  top: 0;
+}
+
+.app-sash.horizontal {
+  cursor: ns-resize;
+  width: 100%;
+  left: 0;
+}
+
+.app-sash.disabled {
+  cursor: default;
+}
