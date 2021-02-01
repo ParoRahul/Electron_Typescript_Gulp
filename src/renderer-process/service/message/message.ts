@@ -2,10 +2,12 @@
 'use strict'
 
 import { Action } from '../../base/action'
-import { CPromise } from '../../../common/promise'
-import { ESeverity } from './severity'
+/* import { CPromise } from '../../../common/promise'
+ */import { ESeverity } from './severity'
 
 import { createDecorator } from '../../../common/ioc/instantiation'
+
+import { Promise } from 'bluebird'
 
 export interface IMessageWithAction {
 	message: string;
@@ -21,8 +23,8 @@ export interface IConfirmation {
 	secondaryButton?: string;
 }
 
-export const CloseAction = new Action('close.message', "Close", null, true, () => CPromise.as(true))
-export const CancelAction = new Action('close.message', "Cancel", null, true, () => CPromise.as(true))
+export const CloseAction = new Action('close.message', "Close", null, true, () => Promise.resolve(true))
+export const CancelAction = new Action('close.message', "Cancel", null, true, () => Promise.resolve(true))
 
 export const DMessageService = createDecorator<IMessageService>('messageService')
 
@@ -71,7 +73,7 @@ export interface IChoiceService {
 	 * `Cancel` option is returned. If there is no such option then promise with
 	 * `0` index is returned.
 	 */
-	choose(severity: ESeverity, message: string, options: string[], modal?: boolean): CPromise<number>;
+	choose(severity: ESeverity, message: string, options: string[], modal?: boolean): Promise<number>;
 }
 
 export import ESeverity = ESeverity;

@@ -3,11 +3,13 @@
 
 import { IWindowService, DWindowService } from '../window/windowService'
 import { product } from '../../../main-process/product'
-import { CPromise } from '../../../common/promise'
+/* import { CPromise } from '../../../common/promise' */
 import { WorkbenchMessageService } from './workbenchMessageService'
 import { IConfirmation, ESeverity, IChoiceService } from './message'
 import { isWindows, isLinux } from '../../../common/node/platform'
 import { Action } from '../../base/action'
+
+import { Promise } from 'bluebird'
 
 export class MessageService extends WorkbenchMessageService implements IChoiceService {
 
@@ -48,18 +50,18 @@ export class MessageService extends WorkbenchMessageService implements IChoiceSe
 		return result === 0 ? true : false
 	}
 
-	choose(severity: ESeverity, message: string, options: string[], modal: boolean = false): CPromise<number> {
+	choose(severity: ESeverity, message: string, options: string[], modal: boolean = false): Promise<number> {
 		if (modal) {
 			const type: 'none' | 'info' | 'error' | 'question' | 'warning' =
 					severity === ESeverity.Info ? 'question' :
 					severity === ESeverity.Error ? 'error' : severity === ESeverity.Warning ? 'warning' : 'none'
-			return CPromise.as(this.showMessageBox({ message, buttons: options, type }))
+			return Promise.resolve(this.showMessageBox({ message, buttons: options, type }))
 		}
 
-		const promise = new CPromise<number>((resolve,reject,onCancel)=> {
+		const promise = new Promise<number>((resolve,reject,onCancel)=> {
 			const callback = (index: number) => () => {
 				resolve(index)
-				return CPromise.as(true)
+				return Promise.resolve(true)
 			}
 			const actions = options.map((option, index) => new Action('?', option, '', true, callback(index)))
 			onCancel = () => this.show(severity, { message, actions }, () => promise.cancel())

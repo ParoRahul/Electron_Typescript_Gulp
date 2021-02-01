@@ -33,7 +33,9 @@ import { IDisposable, dispose } from '../../common/disposable'
 import * as strings from '../../common/strings'
 import * as assert from '../../common/assert'
 import * as DOM from './dom'
-import { DPromise } from '../../common/promise'
+/* import { DPromise } from '../../common/promise' */
+
+import { Promise } from 'bluebird'
 
 export interface IQuickBuilder {
 	(): Builder;
@@ -145,7 +147,7 @@ export class Builder implements IDisposable {
 	private container: HTMLElement;
 	private createdElements: HTMLElement[];
 	private toUnbind: { [type: string]: IDisposable[]; };
-	private captureToUnbind: { [type: string]: IDisposable[]; };
+	private captureToUnbind: { [type: string]: any[]; };
 
 	constructor(element?: HTMLElement, offdom?: boolean) {
 		this.offdom = offdom
@@ -661,12 +663,12 @@ export class Builder implements IDisposable {
 	showDelayed(delay: number): Builder {
 		// Cancel any pending showDelayed() invocation
 		this.cancelVisibilityPromise()
-		const promise = new DPromise(delay)
+		const promise = Promise.delay(delay)
 		this.setProperty(VISIBILITY_BINDING_ID, promise)
 		if (!this.captureToUnbind['promise']) {
 			this.captureToUnbind['promise'] = []
 		}
-		this.captureToUnbind['promise'].push(promise)
+		this.captureToUnbind['promise'].push( promise)
 		promise.then(() => {
 			this.removeProperty(VISIBILITY_BINDING_ID)
 			this.show()
@@ -700,7 +702,7 @@ export class Builder implements IDisposable {
 	}
 
 	private cancelVisibilityPromise(): void {
-		const promise: DPromise = this.getProperty(VISIBILITY_BINDING_ID)
+		const promise = this.getProperty(VISIBILITY_BINDING_ID)
 		if (promise) {
 			promise.cancel()
 			this.removeProperty(VISIBILITY_BINDING_ID)

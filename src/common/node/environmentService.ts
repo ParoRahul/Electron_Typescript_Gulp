@@ -79,7 +79,7 @@ export class EnvironmentService implements IEnvironmentService{
 
 	constructor(private readonly _args: IParsedArgument) {
 		if (this._args.verbose || (process.env['NODE_ENV'] == 'development')) {
-			console.log(`LOG: ${new Date().toLocaleTimeString()} EnvironmentService Instantiate`)
+			console.log(`LOG: ${new Date().toLocaleTimeString()}:  EnvironmentService Instantiate`)
 		}
 	}
 }

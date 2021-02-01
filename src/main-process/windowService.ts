@@ -6,7 +6,8 @@ import { createDecorator } from '../common/ioc/instantiation'
 import { ILogService } from './logService'
 import { IStorageService } from './storageService'
 import { ISettingsService } from './settingsService'
-import { IWindowState, defaultWindowState, AppWindow, IWindowConfiguration } from './window'
+import { IWindowConfiguration } from './windowConfig'
+import { IWindowState, defaultWindowState, AppWindow } from './window'
 import { isEmpty } from '../common/objects'
 
 import { app, BrowserWindow, ipcMain } from 'electron'
@@ -166,6 +167,7 @@ export class WindowsService implements IWindowsService {
 		const option: IWindowConfiguration = {
 			mainPid: process.pid,
 			appRoot: this.environment.appRoot,
+			windowId: appWindow.windowId
 		}
 		appWindow.load(option)
 		return appWindow

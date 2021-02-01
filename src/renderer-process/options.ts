@@ -37,4 +37,6 @@ export interface IOptions {
 	 * Instructs the workbench to create and open the provided files right after startup.
 	 */
 	filesToCreate?: IResourceInput[];
+
+	windowID : number
 }

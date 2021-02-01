@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { IDisposable } from './disposable'
-import { CPromise } from './promise'
+import { Disposable, IDisposable } from './disposable'
+import { Promise } from 'bluebird'
+import * as platform from './node/platform'
 
 
-
-export function nfcall<T>(fn: Function, ...args: any[]): CPromise<T>;
+export function nfcall<T>(fn: Function, ...args: any[]): Promise<T>;
 export function nfcall(fn: Function, ...args: any[]): any {
 	return new Promise((c, e) => fn(...args, (err: unknown, result: any) => err ? e(err) : c(result)))
 }
@@ -55,5 +55,45 @@ export class IdleValue<T> {
 			throw this._error
 		}
 		return this._value!
+	}
+}
+
+export class TimeoutTimer extends Disposable {
+	private _token: platform.ITimeoutToken;
+
+	constructor() {
+		super()
+		this._token = -1
+	}
+
+	dispose(): void {
+		this.cancel()
+		super.dispose()
+	}
+
+	cancel(): void {
+		if (this._token !== -1) {
+			platform.clearTimeout(this._token)
+			this._token = -1
+		}
+	}
+
+	cancelAndSet(runner: () => void, timeout: number): void {
+		this.cancel()
+		this._token = platform.setTimeout(() => {
+			this._token = -1
+			runner()
+		}, timeout)
+	}
+
+	setIfNotSet(runner: () => void, timeout: number): void {
+		if (this._token !== -1) {
+			// timer is already set
+			return
+		}
+		this._token = platform.setTimeout(() => {
+			this._token = -1
+			runner()
+		}, timeout)
 	}
 }

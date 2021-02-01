@@ -16,9 +16,16 @@ import { IStorageService, DStorageService } from './service/storage/storage'
 import { StorageService, inMemoryLocalStorageInstance } from './service/storage/storageService'
 import { IWorkspaceContextService, DWorkspaceContextService } from './service/workspace/workspace'
 import { IEnvironmentService, DEnvironmentService } from '../common/node/environmentService'
-/* import { IInstantiationService } from '../common/ioc/instantiation'
-import { InstantiationService }  from '../common/ioc/instantiationService' */
+import { IWindowService, DWindowService, WindowService } from './service/window/windowService'
+import { MessageService } from './service/message/messageService'
+import { DMessageService, DChoiceService } from './service/message/message'
+import { ILogService, DLogService } from '../main-process/logService'
+import { IInstantiationService } from '../common/ioc/instantiation'
+import { InstantiationService }  from '../common/ioc/instantiationService'
 import { ServiceCollection }  from '../common/ioc/serviceCollection'
+
+
+
 
 export class WorkbenchShell implements IDisposable{
 
@@ -34,10 +41,14 @@ export class WorkbenchShell implements IDisposable{
 
     private workbench: Workbench;
     private storageService : IStorageService
+    private windowService : IWindowService
+    private messageService : MessageService
+    private instantiationService : IInstantiationService
 
-    constructor(private container: HTMLElement,
-                private environmentService: IEnvironmentService,
-                private contextService: IWorkspaceContextService,
+    constructor(private readonly container: HTMLElement,
+                private readonly environmentService: IEnvironmentService,
+                private readonly contextService: IWorkspaceContextService,
+                private readonly logService: ILogService,
                 options: IOptions) {
         this.container = container
         this.options = objects.mixin({}, options)
@@ -46,6 +57,10 @@ export class WorkbenchShell implements IDisposable{
         this.previousErrorTime = 0
         this.workbench = null
         this.storageService = null
+        this.instantiationService = null
+        this.messageService =null
+        this.windowService = null
+        this.logService.log(options)
     }
 
     startUP() {
@@ -56,10 +71,10 @@ export class WorkbenchShell implements IDisposable{
         $(this.container).addClass('app-shell')
         this.content = $('.app-shell-content').appendTo(this.container).getHTMLElement()
         this.contentsContainer = this.createMainElement($(this.content))
-        console.log('WorkbenchShell Renderer Process')
+        this.logService.log('WorkbenchShell Renderer Process')
     }
 
-    private initiateServiceCollection(): ServiceCollection{
+    private initiateServiceCollection(container: HTMLElement): ServiceCollection{
         const disableWorkspaceStorage = this.contextService.hasWorkspace()
         this.storageService = new StorageService(window.localStorage,
                                 disableWorkspaceStorage ? inMemoryLocalStorageInstance : window.localStorage,
@@ -68,13 +83,20 @@ export class WorkbenchShell implements IDisposable{
         serviceCollection.set(DEnvironmentService, this.environmentService)
         serviceCollection.set(DWorkspaceContextService, this.contextService)
         serviceCollection.set(DStorageService, this.storageService)
+        serviceCollection.set(DLogService, this.logService)
+        this.instantiationService = new InstantiationService(serviceCollection,true)
+        this.windowService = this.instantiationService.createInstance(WindowService,this.options.windowID)
+        serviceCollection.set(DWindowService, this.windowService)
+        this.messageService = this.instantiationService.createInstance(MessageService,container)
+        serviceCollection.set(DMessageService, this.messageService)
+		serviceCollection.set(DChoiceService, this.messageService)
         return serviceCollection
     }
 
     private createMainElement(parent: Builder): Builder{
         aria.setARIAContainer(document.body)
         const workbenchContainer = $(parent).div()
-        const serviceCollection = this.initiateServiceCollection()
+        const serviceCollection = this.initiateServiceCollection(parent.getHTMLElement())
         this.workbench = new Workbench( parent.getHTMLElement(),
                                         workbenchContainer.getHTMLElement(),
                                         this.options,
@@ -108,7 +130,7 @@ export class WorkbenchShell implements IDisposable{
 		this.previousErrorTime = now
 		this.previousErrorValue = errorMsg
 		// Log to console
-		console.error(errorMsg)
+		this.logService.error(errorMsg)
 		// Show to user if friendly message provided
 		/* if (error.friendlyMessage && this.messageServiceInstance) {
 			this.messageServiceInstance.show(Severity.Error, error.friendlyMessage);

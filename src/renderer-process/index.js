@@ -1,8 +1,6 @@
-/* eslint-disable no-var */
 'use strict'
 
-var nodePath = require('path')
-//var nodeUrl = require('url')
+const nodePath = require('path')
 
 function parseURLQueryArgs() {
 	const search = window.location.search || ''
@@ -34,7 +32,6 @@ function uriFromPath(_path) {
 
 function registerListeners(enableDevTools, windowId ) {
 		const { ipcRenderer } = require('electron')
-		// let listener: (event: KeyboardEvent) => void
 		let listener
 		const toggleDevToolsKb = (process.platform === 'darwin' ? 'meta-alt-73' : 'ctrl-shift-73') // mac: Cmd-Alt-I, rest: Ctrl-Shift-I
 		const reloadKb = (process.platform === 'darwin' ? 'meta-82' : 'ctrl-82') // mac: Cmd-R, rest: Ctrl-R
@@ -107,10 +104,9 @@ function main(){
 			renderProcess.startUP(configuration)
 			.then(()=>{
 				console.log('RenderProcess Loading done ...')
+				listener2Dispose()
 			}).catch((error)=>{
 				onUnexpectedError(error, enableDevTools)
-			}).finally(()=>{
-				listener2Dispose()
 			})
 		})
 	})

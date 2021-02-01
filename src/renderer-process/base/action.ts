@@ -3,8 +3,10 @@
 
 import { IEvent,IEventEmitter, EventEmitter, Emitter, EventType } from './event'
 import { IDisposable } from '../../common/disposable'
-import { CPromise } from '../../common/promise'
+/* import { CPromise } from '../../common/promise' */
 //import * as Events from 'vs/base/common/events'
+
+import { Promise } from 'bluebird'
 
 export interface IAction extends IDisposable {
 	id: string;
@@ -14,11 +16,11 @@ export interface IAction extends IDisposable {
 	enabled: boolean;
 	checked: boolean;
 	radio: boolean;
-	run(event?: any): CPromise<any>;
+	run(event?: any): Promise<any>;
 }
 
 export interface IActionRunner extends IEventEmitter {
-	run(action: IAction, context?: any): CPromise<any>;
+	run(action: IAction, context?: any): Promise<any>;
 }
 
 export interface IActionItem extends IEventEmitter {
@@ -43,7 +45,7 @@ export interface IActionChangeEvent {
 
 
 export interface IActionCallback {
-	(event?: any): CPromise<any>;
+	(event?: any): Promise<any>;
 }
 
 export interface IActionProvider {
@@ -61,7 +63,7 @@ export class Action implements IAction {
 	protected _checked: boolean;
 	protected _radio: boolean;
 	protected _order: number;
-	protected _actionCallback: (event?: any) => CPromise<any>;
+	protected _actionCallback: (event?: any) => Promise<any>;
 
 	constructor(id: string, label: string = '',
 				cssClass: string = '',
@@ -184,11 +186,12 @@ export class Action implements IAction {
 		this._order = value
 	}
 
-	run(event?: any, data?: any): CPromise<any> {
+	run(event?: any, data?: any): Promise<any> {
 		if (this._actionCallback !== void 0) {
 			return this._actionCallback(event)
 		}
-		return CPromise.as(true)
+		//return Promise.as(true)
+		return Promise.resolve(true)
 	}
 }
 /**
@@ -227,9 +230,10 @@ export interface IRunEvent {
 
 export class ActionRunner extends EventEmitter implements IActionRunner {
 
-	run(action: IAction, context?: any): CPromise<any> {
+	run(action: IAction, context?: any): Promise<any> {
 		if (!action.enabled) {
-			return CPromise.as(null)
+			//return CPromise.as(null)
+			return Promise.resolve(null)
 		}
 
 		this.emit(EventType.BEFORE_RUN, { action: action })
@@ -243,7 +247,7 @@ export class ActionRunner extends EventEmitter implements IActionRunner {
 		}).catch((error)=>{
 			this.emit(EventType.RUN, <IRunEvent>{ action: action, error: error })
 		}).finally(()=> {
-			return new CPromise<any>((resolve,reject)=>{
+			return new Promise<any>((resolve,reject)=>{
 				if (resultVar === null){
 					reject()
 				} else {

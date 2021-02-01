@@ -3,8 +3,10 @@
 import * as url from 'url'
 import * as path from 'path'
 
+import {Promise}  from 'bluebird'
+
+import { IWindowConfiguration } from '../main-process/windowConfig'
 import { IParsedArgument } from '../common/node/argumentParser'
-import { IOpenFileRequest } from '../common/node/openFileRrquest'
 import { realpath, status } from '../common/node/fileSystem'
 import platform = require('../common/node/platform')
 import { domContentLoaded } from './base/dom'
@@ -15,17 +17,14 @@ import { WorkbenchShell } from './shell'
 import { IOptions, IResourceInput } from './options'
 
 import { EnvironmentService } from '../common/node/environmentService'
+import { LogService } from '../main-process/logService'
 import { IWorkspace } from './service/workspace/workspace'
 import { WorkspaceContextService } from './service/workspace/workspaceService'
 
 import { webFrame } from 'electron'
 
+global.Promise = require('bluebird')
 
-interface IWindowConfiguration extends IParsedArgument, IOpenFileRequest {
-	workspacePath?: string;
-	zoomLevel?: number;
-	fullscreen?: boolean;
-}
 
 function toResourceInput(paths: string[] ): IResourceInput[] {
 	return paths.map(p => {
@@ -36,7 +35,7 @@ function toResourceInput(paths: string[] ): IResourceInput[] {
 
 function getWorkspace(workspacePath: string): Promise<IWorkspace> {
     if (!workspacePath) {
-		return Promise.reject('WorkSpace Path is Empty')
+		return new Promise<null>((resolve,reject)=>resolve(null))
     }
     realpath(workspacePath).then(
     (realWorkspacePath: string)=> {
@@ -73,14 +72,17 @@ function openWorkbenchshell(configuration: IWindowConfiguration,
     const parsedArguments =  getParsedArguments(configuration)
     const environmentService = new EnvironmentService(parsedArguments)
     const contextService = new WorkspaceContextService(workspace)
+    const logService = new LogService(environmentService)
 
     return domContentLoaded().then(()=>{
         const workbenchshell = new WorkbenchShell(document.body,
                                             environmentService,
                                             contextService,
+                                            logService,
                                             options)
         workbenchshell.startUP()
-        /* (self).require.config({ onError: (err: unknown) => {
+        //
+        /* self.require.config({ onError: (err: unknown) => {
                 if ((err as Error).errorCode === 'load') {
                     workbenchshell.onUnexpectedError(loaderError(err))
                 }
@@ -90,6 +92,7 @@ function openWorkbenchshell(configuration: IWindowConfiguration,
 }
 
 export function startUP(configuration: IWindowConfiguration): Promise<void>{
+    console.log(configuration)
     browser.setZoomFactor(webFrame.getZoomFactor())
 	browser.setZoomLevel(webFrame.getZoomLevel())
     browser.setFullscreen(!!configuration.fullscreen)
@@ -100,7 +103,8 @@ export function startUP(configuration: IWindowConfiguration): Promise<void>{
                         toResourceInput(configuration.filesToCreate) : null
 	const shellOptions: IOptions = {
 		filesToOpen,
-		filesToCreate,
+        filesToCreate,
+        windowID: configuration.windowId
     }
     console.log(`Platform is ${platform.isWeb ? 'web': 'node'}`)
     return getWorkspace(configuration.workspacePath).then(workspace => {

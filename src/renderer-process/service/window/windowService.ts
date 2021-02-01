@@ -5,15 +5,15 @@ import { ElectronWindow } from './window'
 import { createDecorator } from '../../../common/ioc/instantiation'
 import { IEvent, Emitter } from '../../base/event'
 
-import {ipcRenderer as ipc, remote} from 'electron'
+import {ipcRenderer as ipc} from 'electron'
 
-const windowId = remote.getCurrentWindow().id
+//const windowId = remote.getCurrentWindow().id
 
-export const DWindowService = createDecorator<IWindowService>('windowService')
+export const DWindowIPCService = createDecorator<IWindowIPCService>('windowService')
 
 export interface IWindowServices {
 	_serviceBrand: undefined;
-	windowService?: IWindowService;
+	windowService?: IWindowIPCService;
 }
 
 export interface IBroadcast {
@@ -21,7 +21,8 @@ export interface IBroadcast {
 	payload: any;
 }
 
-export interface IWindowService {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export interface IWindowIPCService {
 	_serviceBrand: any;
 
 	getWindowId(): number;
@@ -35,17 +36,15 @@ export interface IWindowService {
 	onBroadcast: IEvent<IBroadcast>;
 }
 
-export class WindowService implements IWindowService {
+export class WindowService implements IWindowIPCService {
 	_serviceBrand: any;
 
 	private win: ElectronWindow;
-	private windowId: number;
+
 	private _onBroadcast: Emitter<IBroadcast>;
 
-	constructor() {
+	constructor(private readonly windowId: number) {
 		this._onBroadcast = new Emitter<IBroadcast>()
-		this.windowId = windowId
-
 		this.registerListeners()
 	}
 

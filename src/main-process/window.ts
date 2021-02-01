@@ -3,15 +3,17 @@
 import * as path from 'path'
 import * as url from 'url'
 
-import { IParsedArgument } from '../common/node/argumentParser'
 import { IEnvironmentService } from '../common/node/environmentService'
+import * as objects from '../common/objects'
+/* import { CPromise } from '../common/promise' */
+import { Promise } from 'bluebird'
+
 import { ILogService } from './logService'
 import { ISettingsService, TMenuBarVisibility } from './settingsService'
 import { product } from './product'
-import * as objects from '../common/objects'
-
+import { IWindowConfiguration } from './windowConfig'
 import { BrowserWindow, screen, nativeTheme, Rectangle, dialog,nativeImage  } from 'electron'
-import { CPromise } from '../common/promise'
+
 
 export interface IValueCallback<T> {
 	(value: T): void;
@@ -54,16 +56,6 @@ export enum EReadyState {
 	READY //This window is done loading HTML
 }
 
-export interface IWindowConfiguration extends IParsedArgument {
-	mainPid: number;
-	windowId?: number;
-	appRoot: string;
-	zoomLevel?: number;
-	fullscreen?: boolean;
-	highContrast?: boolean;
-	baseTheme?: string;
-	maximized?: boolean;
-}
 
 export interface IAppWindow {
 	id: number;
@@ -176,6 +168,8 @@ export class AppWindow  implements IAppWindow {
 		this.setMenuBarVisibility(this.currentMenuBarVisibility,true)
 		this.registerEventListeners()
 	}
+
+	get windowId(): number { return this._id}
 
 	private restoreWindowState(state?: IWindowState): IWindowState {
 		//const hasMultipleDisplays = false
@@ -425,8 +419,8 @@ export class AppWindow  implements IAppWindow {
 		this._window.webContents.send(channel, ...args)
 	}
 
-	ready(): CPromise<AppWindow> {
-		return new CPromise<AppWindow>((resolve, reject) => {
+	ready(): Promise<AppWindow> {
+		return new Promise<AppWindow>((resolve, reject) => {
 			try {
 				if (this.isReady) {
 					return resolve(this)

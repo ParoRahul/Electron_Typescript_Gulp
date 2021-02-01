@@ -4,7 +4,7 @@
 import 'css!./messageList'
 
 import {Builder, $} from '../builder'
-import { CPromise, DPromise } from '../../../common/promise'
+//import { CPromise, DPromise } from '../../../common/promise'
 import * as DOM from '../dom'
 import * as browser from '../browser'
 import * as aria from '../aria/aria'
@@ -12,6 +12,8 @@ import * as types from '../../../common/types'
 import {IEvent,Emitter} from '../event'
 import {Action} from '../action'
 import * as htmlRenderer from '../htmlContentRenderer'
+
+import { Promise } from 'bluebird'
 
 export enum ESeverity {
 	Info,
@@ -51,7 +53,7 @@ export class MessageList {
 	private static DEFAULT_MAX_MESSAGE_LENGTH = 500;
 
 	private messages: IMessageEntry[];
-	private messageListPurger: DPromise;
+	private messageListPurger: Promise<any>;
 	private messageListContainer: Builder;
 
 	private container: HTMLElement;
@@ -244,7 +246,7 @@ export class MessageList {
 								this.usageLogger.publicLog('workbenchActionExecuted', { id: action.id, from: 'message' })
 							}
 
-							(action.run() || CPromise.as(null))
+							(action.run() || Promise.resolve(null))
 								.then(null, error => this.showMessage(ESeverity.Error, (error as Error)))
 								.then(r => {
 									if (typeof r === 'boolean' && r === false) {
@@ -289,7 +291,7 @@ export class MessageList {
 				new Action('close.message.action', /* nls.localize('close', "Close") */'Close', null, true, () => {
 					this.hideMessage(message.text) // hide all matching the text since there may be duplicates
 
-					return CPromise.as(true)
+					return Promise.resolve(true)
 				})
 			]
 		}
@@ -390,8 +392,9 @@ export class MessageList {
 		}
 
 		// Configure
-		this.messageListPurger = new DPromise(this.options.purgeInterval)
-		this.messageListPurger.then(() => {
+		//this.messageListPurger = new DPromise(this.options.purgeInterval)
+		this.messageListPurger = Promise.delay(this.options.purgeInterval)
+		.then(() => {
 			let needsUpdate = false
 			let counter = 0
 
@@ -410,6 +413,8 @@ export class MessageList {
 			if (needsUpdate) {
 				this.renderMessages(false, counter)
 			}
+
 		})
+
 	}
 }

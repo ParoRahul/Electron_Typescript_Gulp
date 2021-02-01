@@ -49,7 +49,7 @@ gulp.task('build', gulp.series('copy-resource','clean-directory','set-environmen
 			requestedExecutionLevel : "asInvoker" ,
 		},
 		forceCodeSigning: false,
-		buildDependenciesFromSource: true 
+		buildDependenciesFromSource: true
 	}
 	return electronBuilder.build({
 		targets: platform.WINDOWS.createTarget(),
@@ -59,5 +59,5 @@ gulp.task('build', gulp.series('copy-resource','clean-directory','set-environmen
 	}) .catch((error)=> {
 		console.error('build Sucessful')
 		console.error(error)
-	})	
+	})
 }))

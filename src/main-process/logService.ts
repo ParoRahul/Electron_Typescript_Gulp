@@ -16,7 +16,7 @@ export class LogService implements ILogService {
 
 	_serviceBrand: undefined;
 
-	constructor( private environment: IEnvironmentService) {
+	constructor( private readonly environment: IEnvironmentService) {
 		if (this.environment.verbose || !this.environment.isBuilt) {
 			this.log('LogService Instantiate')
 		}
